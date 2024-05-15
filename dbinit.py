@@ -2,24 +2,33 @@ import mysql.connector
 import time
 
 class DB:
-    def __init__(self,server,user,pwd) -> None:
+    def __init__(self, server, user, pwd) -> None:
         self.server = server
         self.user = user
         self.pwd = pwd
-        self.con = mysql.connector.connect(host = server, username = user, password = pwd)
-    
+        self.con = mysql.connector.connect(host=server, user=user, password=pwd)
+
     def createDB(self):
-        query = f"create database if not exists bank;"
+        query = "CREATE DATABASE IF NOT EXISTS bank;"
         c = self.con.cursor()
         c.execute(query)
         self.con.commit()
         c.close()
-        self.con.close()
     
-    def createTable(self,db):
-        self.db = db
-        self.con = mysql.connector.connect(host = self.server, username = self.user, password = self.pwd, database = db)
-        query1 = f"create table if not exists users (Name varchar(30) unique not null, Country varchar(15) not null, Contact varchar(15) unique not null, Email varchar(30) unique not null, Password varchar(16) unique not null, AccountNo char(16) unique not null, CurrentBalance float not null, primary key(AccountNo));"
+    def createTable(self, db):
+        self.db = db 
+        self.con = mysql.connector.connect(host=self.server, user=self.user, password=self.pwd, database=db)
+        query1 = (
+            "CREATE TABLE IF NOT EXISTS users ("
+            "Name VARCHAR(30) UNIQUE NOT NULL, "
+            "Country VARCHAR(15) NOT NULL, "
+            "Contact VARCHAR(15) UNIQUE NOT NULL, "
+            "Email VARCHAR(30) UNIQUE NOT NULL, "
+            "Password VARCHAR(16) UNIQUE NOT NULL, "
+            "AccountNo CHAR(16) UNIQUE NOT NULL, "
+            "CurrentBalance FLOAT NOT NULL, "
+            "PRIMARY KEY (AccountNo));"
+        )
         c = self.con.cursor()
         c.execute(query1)
         self.con.commit()
@@ -30,23 +39,23 @@ print("Install MySQL server from https://mysql.com and set up the user account."
 try:
     inp = input("Enter 'DONE' if you've already installed MySQL server or press enter to exit: ")
     if inp.upper() == "DONE":
-        #connect to localhost using username and pwd
+        # Connect to localhost using username and pwd
         print("Login to connect to the server")
         username = input("\tEnter username: ")
         password = input("\tEnter password: ")
         print("Please Wait! Connecting to the server", end="")
         for i in "...":
-            print(i,end="",flush=True)
+            print(i, end="", flush=True)
             time.sleep(1)
         time.sleep(2)
         print()
         try:
-            database = DB("localhost",username,password)
-            print("Sucessfully connected to the server!")
+            database = DB("localhost", username, password)
+            print("Successfully connected to the server!")
             time.sleep(2)
             print("Setting up the database. Please wait", end="")
             for i in "...":
-                print(i,end="",flush=True)
+                print(i, end="", flush=True)
                 time.sleep(2)
             time.sleep(1)
             print()
@@ -56,29 +65,28 @@ try:
             for i in "Have a nice day:)":
                 print(i, end="", flush=True)
                 time.sleep(0.05)
-            close = input()
-        except:
-            print("Oops! Can't connect to the server!\nPlease check the login credentials and re-run the program.")
+            input()
+        except mysql.connector.Error as err:
+            print(f"Oops! Can't connect to the server! Error: {err}\nPlease check the login credentials and re-run the program.")
             for i in "Have a nice day:)":
                 print(i, end="", flush=True)
                 time.sleep(0.05)
             print()
-            close = input()
+            input()
             exit()
-    
     else:
         print("Install the required file from https://mysql.com and re-run the program.")
         for i in "Have a nice day:)":
             print(i, end="", flush=True)
             time.sleep(0.05)
         print()
-        close = input()
-        
-except:
-    print("Oops! an error occurred! Exiting the program.")
+        input()
+except Exception as e:
+    print(f"Oops! An error occurred! Exiting the program. Error: {e}")
     for i in "Have a nice day:)":
         print(i, end="", flush=True)
         time.sleep(0.05)
     print()
-    close = input()
+    input()
     exit()
+# this is the end of the app
