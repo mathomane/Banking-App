@@ -23,14 +23,14 @@ class DBApp:
     def __init__(self, root, db):
         self.db = db
         self.root = root
-        self.root.title("Mini Bank System Setup")
+        self.root.title("Pocket Bank Setup")
         self.create_widgets()
 
     def create_widgets(self):
         self.frame = tk.Frame(self.root)
         self.frame.pack()
 
-        self.lbl_welcome = tk.Label(self.frame, text="Welcome to Mini Bank System Setup")
+        self.lbl_welcome = tk.Label(self.frame, text="Welcome to Pocket Bank Setup")
         self.lbl_welcome.pack()
 
         self.btn_setup = tk.Button(self.frame, text="Setup Database", command=self.setup_db)
