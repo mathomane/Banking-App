@@ -76,7 +76,7 @@ class BankSystem:
 class BankApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Mini Bank System")
+        self.root.title("Pocket Bank")
         self.bank_system = BankSystem()
         self.logged_in_user = None
         
