@@ -56,14 +56,14 @@ class BankSystem:
         balance = self.check_bal(ac_no)
         new_balance = balance + amount
         self.update_balance(ac_no, new_balance)
-        return True
+        return new_balance
 
     def withdraw(self, ac_no, amount):
         balance = self.check_bal(ac_no)
         if balance >= amount:
             new_balance = balance - amount
             self.update_balance(ac_no, new_balance)
-            return True
+            return new_balance
         return False
 
     def sign_in(self, email, password):
@@ -125,9 +125,7 @@ class BankApp:
         tk.Label(self.root, text=f"Welcome Mr./Ms. {self.logged_in_user[0].upper()}", font=("Arial", 18)).pack(pady=10)
         tk.Label(self.root, text=f"A/C No.: {self.logged_in_user[5]}").pack(pady=5)
         
-        tk.Button(self.root, text="Check Balance", command=self.check_balance).pack(pady=5)
-        tk.Button(self.root, text="Add Money", command=self.add_money).pack(pady=5)
-        tk.Button(self.root, text="Withdraw Money", command=self.withdraw_money).pack(pady=5)
+        self.transaction_prompt()
         tk.Button(self.root, text="Sign Out", command=self.sign_out).pack(pady=20)
     
     def sign_in(self):
@@ -154,31 +152,38 @@ class BankApp:
         else:
             messagebox.showerror("Error", message)
     
-    def check_balance(self):
+    def transaction_prompt(self):
         balance = self.bank_system.check_bal(self.logged_in_user[5])
-        messagebox.showinfo("Balance", f"Available balance: {balance}")
-
-    def add_money(self):
-        self.transaction_screen("Add Money", self.bank_system.add_money)
-
-    def withdraw_money(self):
-        self.transaction_screen("Withdraw Money", self.bank_system.withdraw)
-
-    def transaction_screen(self, title, transaction_func):
+        if messagebox.askyesno("Transaction", "Would you like to make a transaction?"):
+            if messagebox.askyesno("Transaction Type", "Would you like to make a deposit? (No for withdrawal)"):
+                self.transaction_screen(balance, "Deposit", self.bank_system.add_money)
+            else:
+                self.transaction_screen(balance, "Withdraw", self.bank_system.withdraw)
+        else:
+            self.create_main_menu()
+    
+    def transaction_screen(self, balance, transaction_type, transaction_func):
         self.clear_screen()
+
+        tk.Label(self.root, text=f"Current Balance: {balance}", font=("Arial", 14)).pack(pady=10)
         
-        tk.Label(self.root, text=title, font=("Arial", 18)).pack(pady=10)
         tk.Label(self.root, text="Amount").pack()
         self.amount_entry = tk.Entry(self.root)
         self.amount_entry.pack()
         
         def perform_transaction():
-            amount = float(self.amount_entry.get())
-            if transaction_func(self.logged_in_user[5], amount):
-                messagebox.showinfo("Success", "Transaction Successful.")
-                self.create_main_menu()
-            else:
-                messagebox.showerror("Error", "Transaction Failed.")
+            try:
+                amount = float(self.amount_entry.get())
+                if amount <= 0:
+                    raise ValueError("Amount must be greater than zero.")
+                new_balance = transaction_func(self.logged_in_user[5], amount)
+                if new_balance is not False:
+                    messagebox.showinfo("Success", f"Transaction Successful. New balance: {new_balance}")
+                else:
+                    messagebox.showerror("Error", "Transaction Failed. Insufficient funds.")
+            except ValueError:
+                messagebox.showerror("Error", "You provided an invalid input.")
+            self.create_main_menu()
         
         tk.Button(self.root, text="Submit", command=perform_transaction).pack(pady=10)
         tk.Button(self.root, text="Back", command=self.create_main_menu).pack()
