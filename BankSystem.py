@@ -1,7 +1,10 @@
 import datetime
 import os
 import tkinter as tk
+from tkinter import *
 from tkinter import messagebox
+from tkinter import PhotoImage
+
 
 class BankSystem:
     def __init__(self, data_file='users.txt'):
@@ -76,16 +79,29 @@ class BankSystem:
 class BankApp:
     def __init__(self, root):
         self.root = root
+        self.root.geometry("800x800")
         self.root.title("Pocket Bank")
         self.bank_system = BankSystem()
         self.logged_in_user = None
         
         self.create_login_screen()
-
+        
     def create_login_screen(self):
         self.clear_screen()
         
-        tk.Label(self.root, text="User Login", font=("Arial", 18)).pack(pady=10)
+        self.root.configure(bg='#fff')
+        
+        # Add an image (ensure the path is correct and the image exists)
+        try:
+            image = PhotoImage(file="images/banking-apps_meta_resized.png")
+            image_label = tk.Label(self.root, image=image)
+            image_label.image = image  # Keep a reference to the image to prevent garbage collection
+            image_label.pack()
+        except Exception as e:
+            print(f"Error loading image: {e}")
+
+        
+        tk.Label(self.root, text="User Login", font="poppins").pack(pady=10)
         tk.Label(self.root, text="Email").pack()
         self.email_entry = tk.Entry(self.root)
         self.email_entry.pack()
@@ -93,8 +109,8 @@ class BankApp:
         self.password_entry = tk.Entry(self.root, show='*')
         self.password_entry.pack()
         
-        tk.Button(self.root, text="Sign In", command=self.sign_in).pack(pady=10)
-        tk.Button(self.root, text="Create an Account", command=self.create_signup_screen).pack()
+        tk.Button(self.root, text="Sign In", background="#8DD9CC", activebackground="orange", font="poppins", command=self.sign_in).pack(pady=10)
+        tk.Button(self.root, text="Create an Account", background="#8DD9CC", activebackground="orange", font="poppins", borderwidth = 8, command=self.create_signup_screen).pack()
         
     def create_signup_screen(self):
         self.clear_screen()
@@ -121,15 +137,17 @@ class BankApp:
 
     def create_main_menu(self):
         self.clear_screen()
-        
-        tk.Label(self.root, text=f"Welcome Mr./Ms. {self.logged_in_user[0].upper()}", font=("Arial", 18)).pack(pady=10)
-        tk.Label(self.root, text=f"A/C No.: {self.logged_in_user[5]}").pack(pady=5)
-        
-        tk.Button(self.root, text="Check Balance", command=self.check_balance).pack(pady=5)
-        tk.Button(self.root, text="Add Money", command=self.add_money).pack(pady=5)
-        tk.Button(self.root, text="Withdraw Money", command=self.withdraw_money).pack(pady=5)
-        tk.Button(self.root, text="Sign Out", command=self.sign_out).pack(pady=20)
-    
+        self.root.columnconfigure(0, weight=1)
+        self.root.columnconfigure(1, weight=1)
+        self.root.columnconfigure(2, weight=1)
+
+        tk.Label(self.root, text=f"Welcome Mr./Ms. {self.logged_in_user[0].upper()}", font=("poppins")).grid(row=0, column=1, pady=10, sticky='ew')
+        tk.Label(self.root, text=f"A/C No.: {self.logged_in_user[5]}").grid(row=1, column=1, pady=5, sticky='ew')
+
+        tk.Button(self.root, text="Check Balance", command=self.check_balance).grid(row=2, column=1, pady=5, sticky='ew')
+        tk.Button(self.root, text="Add Money", command=self.add_money).grid(row=3, column=1, pady=5, sticky='ew')
+        tk.Button(self.root, text="Withdraw Money", command=self.withdraw_money).grid(row=4, column=1, pady=5, sticky='ew')
+        tk.Button(self.root, text="Sign Out", command=self.sign_out).grid(row=5, column=1, pady=20, sticky='ew')
     def sign_in(self):
         email = self.email_entry.get()
         password = self.password_entry.get()
@@ -167,7 +185,7 @@ class BankApp:
     def transaction_screen(self, title, transaction_func):
         self.clear_screen()
         
-        tk.Label(self.root, text=title, font=("Arial", 18)).pack(pady=10)
+        tk.Label(self.root, text=title, font=("poppins")).pack(pady=10)
         tk.Label(self.root, text="Amount").pack()
         self.amount_entry = tk.Entry(self.root)
         self.amount_entry.pack()
