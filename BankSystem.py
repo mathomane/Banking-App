@@ -104,9 +104,9 @@ class BankApp:
         self.password_entry.pack()
 
         tk.Button(self.root, text="Sign In", background="#8DD9CC", activebackground="orange", font="poppins",
-                  command=self.sign_in).pack(pady=10)
+                command=self.sign_in).pack(pady=10)
         tk.Button(self.root, text="Create an Account", background="#8DD9CC", activebackground="orange", font="poppins",
-                  borderwidth=8, command=self.create_signup_screen).pack()
+                borderwidth=8, command=self.create_signup_screen).pack()
 
     def create_signup_screen(self):
         self.clear_screen()
