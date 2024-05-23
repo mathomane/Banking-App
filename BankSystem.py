@@ -1,16 +1,13 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import messagebox, simpledialog, PhotoImage
-import os
 import string
 import random
+from dbinit import DB  # Import the DB class from dbinit.py
 
-import customtkinter as ctk
-from PIL import Image, ImageTk
-from dbinit import DB 
 class BankSystem:
-    def __init__(self, data_file='users.txt'):
-        self.db = DB(data_file)
+    def __init__(self, data_file='bank_system.txt'):  # Update the default file name
+        self.db = DB(data_file)  # Use the DB class for database operations
 
     def generate_ac_no(self, name, country):
         name_char_vals = [ord(i) for i in name]
@@ -18,48 +15,24 @@ class BankSystem:
         base_num = 90036900100000
         ac_no = country[0:2].upper() + str(base_num + sum_name_char_vals)
         return ac_no
-# comment
-    def read_data(self):
-        if not os.path.exists(self.data_file):
-            return []
-        with open(self.data_file, 'r') as file:
-            data = file.readlines()
-            return [line.strip().split('|') for line in data]
-        
-    def write_data(self):
-        with open(self.data_file, 'w') as file:
-            for record in data: 
-                file.write('|' .join(record) + '\n')
-    
-    
-            
 
     def sign_up(self, name, country, contact, email, password, gender):
         ac_num = self.generate_ac_no(name, country)
-        data = self.db.read_data()
+        data = self.db.read_data()  # Use the DB class method
         for record in data:
             if record[3] == email:
                 return False, "Email already used!"
 
         new_user = [name, country, contact, email, password, ac_num, '0', gender]
         data.append(new_user)
-        self.write_data(data)
+        self.db.write_data(data)  # Use the DB class method
         return True, "Account created successfully."
 
-
     def check_bal(self, ac_no):
-        data = self.read_data()
-        for record in data:
-            if record[5] == ac_no:
-                return float(record[6])
-        return 0.0
+        return self.db.check_bal(ac_no)  # Use the DB class method
 
     def update_balance(self, ac_no, new_balance):
-        data = self.read_data()
-        for record in data:
-            if record[5] == ac_no:
-                record[6] = str(new_balance)
-        self.write_data(data)
+        self.db.update_balance(ac_no, new_balance)  # Use the DB class method
 
     def add_money(self, ac_no, amount):
         balance = self.check_bal(ac_no)
@@ -76,7 +49,7 @@ class BankSystem:
         return False
 
     def sign_in(self, email, password):
-        data = self.read_data()
+        data = self.db.read_data()  # Use the DB class method
         for record in data:
             if record[3] == email and record[4] == password:
                 return True, record
@@ -92,7 +65,7 @@ class BankApp:
         self.root = root
         self.root.geometry("800x800")
         self.root.title("Pocket Bank")
-        self.bank_system = BankSystem()
+        self.bank_system = BankSystem('bank_system.txt')  # Use the updated BankSystem class
         self.logged_in_user = None
 
         self.create_login_screen()
@@ -101,78 +74,67 @@ class BankApp:
         self.clear_screen()
 
         self.root.configure(bg='#fff')
-        
-        
-        
 
-        
-
-        # Add an image (ensure the path is correct and the image exists)
         try:
             image = PhotoImage(file="images/banking-apps_meta_resized.png")
             image_label = tk.Label(self.root, image=image)
-            image_label.image = image  # Keep a reference to the image to prevent garbage collection
+            image_label.image = image
             image_label.pack()
         except Exception as e:
             print(f"Error loading image: {e}")
 
-        tk.Label(self.root, text="User Login", font="poppins", background="#ffffff").pack(pady=10)
-        tk.Label(self.root, text="Email", font="poppins", background="#ffffff").pack()
+        tk.Label(self.root, text="User Login", font="poppins").pack(pady=10)
+        tk.Label(self.root, text="Email").pack()
         self.email_entry = tk.Entry(self.root)
         self.email_entry.pack()
-        tk.Label(self.root, text="Password", font="poppins", background="#ffffff").pack()
+        tk.Label(self.root, text="Password").pack()
         self.password_entry = tk.Entry(self.root, show='*')
         self.password_entry.pack()
 
-        tk.Button(self.root, text="Sign In", background="#8DD9CC", activebackground="orange", font="poppins",command=self.sign_in).pack(pady=10)
+        tk.Button(self.root, text="Sign In", background="#8DD9CC", activebackground="orange", font="poppins", command=self.sign_in).pack(pady=10)
         tk.Button(self.root, text="Create an Account", background="#8DD9CC", activebackground="orange", font="poppins", borderwidth=8, command=self.create_signup_screen).pack()
 
     def create_signup_screen(self):
         self.clear_screen()
 
-        root.configure(bg="#8DD9CC")
-        tk.Label(self.root, text="Sign Up", background="#8DD9CC", activebackground="orange", font=("poppins", 20)).pack(pady=50)
-        tk.Label(self.root, text="Name",background="#8DD9CC", activebackground="orange", font="poppins").pack(pady=50)
+        tk.Label(self.root, text="Sign Up", font=("Arial", 18)).pack(pady=10)
+        tk.Label(self.root, text="Name").pack()
         self.name_entry = tk.Entry(self.root)
         self.name_entry.pack()
-        tk.Label(self.root, text="Country", background="#8DD9CC", activebackground="orange", font="poppins").pack()
+        tk.Label(self.root, text="Country").pack()
         self.country_entry = tk.Entry(self.root)
         self.country_entry.pack()
-        tk.Label(self.root, text="Contact No", background="#8DD9CC", activebackground="orange", font="poppins").pack()
+        tk.Label(self.root, text="Contact No").pack()
         self.contact_entry = tk.Entry(self.root)
         self.contact_entry.pack()
-        tk.Label(self.root, text="Email", background="#8DD9CC", activebackground="orange", font="poppins").pack()
+        tk.Label(self.root, text="Email").pack()
         self.email_signup_entry = tk.Entry(self.root)
         self.email_signup_entry.pack()
-        
-        # Gender selection
+
         tk.Label(self.root, text="Gender").pack()
         self.gender_var = tk.StringVar(value="Male")
         tk.Radiobutton(self.root, text="Male", variable=self.gender_var, value="Male").pack()
         tk.Radiobutton(self.root, text="Female", variable=self.gender_var, value="Female").pack()
-        
-        # Password entry
-        tk.Label(self.root, text="Password", background="#8DD9CC", activebackground="orange", font="poppins").pack()
+
+        tk.Label(self.root, text="Password").pack()
         self.password_signup_entry = tk.Entry(self.root, show='*')
         self.password_signup_entry.pack()
 
-        # Checkbox for choosing random password
         self.random_password_var = tk.BooleanVar(value=False)
-        tk.Checkbutton(self.root, text="Use Random Password", background="#8DD9CC", variable=self.random_password_var).pack()
+        tk.Checkbutton(self.root, text="Use Random Password", variable=self.random_password_var).pack()
 
-        tk.Button(self.root, text="Sign Up",background="#8DD9CC", activebackground="orange", font="poppins", command=self.sign_up).pack(pady=10)
-        tk.Button(self.root, text="Back",background="#8DD9CC", activebackground="orange", font="poppins", borderwidth = 8, command=self.create_login_screen).pack()
+        tk.Button(self.root, text="Sign Up", command=self.sign_up).pack(pady=10)
+        tk.Button(self.root, text="Back", command=self.create_login_screen).pack()
 
     def create_main_menu(self):
         self.clear_screen()
         self.root.columnconfigure(0, weight=1)
         self.root.columnconfigure(1, weight=1)
         self.root.columnconfigure(2, weight=1)
-        
-        root.configure(bg="#8DD9CC")
 
+        greeting = "Mr." if self.logged_in_user[7] == "Male" else "Ms."
 
-        tk.Label(self.root, text=f"Welcome Mr./Ms. {self.logged_in_user[0].upper()}", font=("poppins")).grid(row=0, column=1,pady=10,sticky='ew')
+        tk.Label(self.root, text=f"Welcome {greeting} {self.logged_in_user[0].upper()}", font=("poppins")).grid(row=0, column=1, pady=10, sticky='ew')
         tk.Label(self.root, text=f"A/C No.: {self.logged_in_user[5]}").grid(row=1, column=1, pady=5, sticky='ew')
 
         tk.Button(self.root, text="Check Balance", command=self.check_balance).grid(row=2, column=1, pady=5, sticky='ew')
@@ -209,7 +171,6 @@ class BankApp:
             self.create_login_screen()
         else:
             messagebox.showerror("Error", message)
-
 
     def transaction_prompt(self):
         balance = self.bank_system.check_bal(self.logged_in_user[5])
@@ -265,7 +226,6 @@ class BankApp:
     def clear_screen(self):
         for widget in self.root.winfo_children():
             widget.destroy()
-
 
 if __name__ == "__main__":
     root = tk.Tk()
