@@ -4,10 +4,10 @@ from tkinter import messagebox, simpledialog, PhotoImage
 import os
 import string
 import random
-
+from dbinit import DB 
 class BankSystem:
     def __init__(self, data_file='users.txt'):
-        self.data_file = data_file
+        self.db = DB(data_file)
 
     def generate_ac_no(self, name, country):
         name_char_vals = [ord(i) for i in name]
@@ -15,30 +15,34 @@ class BankSystem:
         base_num = 90036900100000
         ac_no = country[0:2].upper() + str(base_num + sum_name_char_vals)
         return ac_no
-
+# comment
     def read_data(self):
         if not os.path.exists(self.data_file):
             return []
         with open(self.data_file, 'r') as file:
             data = file.readlines()
-        return [line.strip().split('|') for line in data]
-
-    def write_data(self, data):
+            return [line.strip().split('|') for line in data]
+        
+    def write_data(self):
         with open(self.data_file, 'w') as file:
-            for record in data:
-                file.write('|'.join(record) + '\n')
+            for record in data: 
+                file.write('|' .join(record) + '\n')
+    
+    
+            
 
-    def sign_up(self, name, country, contact, email, password):
+    def sign_up(self, name, country, contact, email, password, gender):
         ac_num = self.generate_ac_no(name, country)
-        data = self.read_data()
+        data = self.db.read_data()
         for record in data:
             if record[3] == email:
                 return False, "Email already used!"
 
-        new_user = [name, country, contact, email, password, ac_num, '0']
+        new_user = [name, country, contact, email, password, ac_num, '0', gender]
         data.append(new_user)
         self.write_data(data)
         return True, "Account created successfully."
+
 
     def check_bal(self, ac_no):
         data = self.read_data()
@@ -131,7 +135,13 @@ class BankApp:
         tk.Label(self.root, text="Email").pack()
         self.email_signup_entry = tk.Entry(self.root)
         self.email_signup_entry.pack()
-
+        
+        # Gender selection
+        tk.Label(self.root, text="Gender").pack()
+        self.gender_var = tk.StringVar(value="Male")
+        tk.Radiobutton(self.root, text="Male", variable=self.gender_var, value="Male").pack()
+        tk.Radiobutton(self.root, text="Female", variable=self.gender_var, value="Female").pack()
+        
         # Password entry
         tk.Label(self.root, text="Password").pack()
         self.password_signup_entry = tk.Entry(self.root, show='*')
@@ -149,8 +159,10 @@ class BankApp:
         self.root.columnconfigure(0, weight=1)
         self.root.columnconfigure(1, weight=1)
         self.root.columnconfigure(2, weight=1)
-
-        tk.Label(self.root, text=f"Welcome Mr./Ms. {self.logged_in_user[0].upper()}", font=("poppins")).grid(row=0, column=1,pady=10,sticky='ew')
+        
+        greeting = "Mr." if self.logged_in_user[7] == "Male" else "Ms."
+        
+        tk.Label(self.root, text=f"Welcome {greeting} {self.logged_in_user[0].upper()}", font=("poppins")).grid(row=0, column=1, pady=10, sticky='ew')
         tk.Label(self.root, text=f"A/C No.: {self.logged_in_user[5]}").grid(row=1, column=1, pady=5, sticky='ew')
 
         tk.Button(self.root, text="Check Balance", command=self.check_balance).grid(row=2, column=1, pady=5, sticky='ew')
@@ -173,6 +185,7 @@ class BankApp:
         country = self.country_entry.get()
         contact = self.contact_entry.get()
         email = self.email_signup_entry.get()
+        gender = self.gender_var.get()
 
         if self.random_password_var.get():
             password = self.bank_system.generate_password()
@@ -180,12 +193,13 @@ class BankApp:
         else:
             password = self.password_signup_entry.get()
 
-        success, message = self.bank_system.sign_up(name, country, contact, email, password)
+        success, message = self.bank_system.sign_up(name, country, contact, email, password, gender)
         if success:
             messagebox.showinfo("Success", message)
             self.create_login_screen()
         else:
             messagebox.showerror("Error", message)
+
 
     def transaction_prompt(self):
         balance = self.bank_system.check_bal(self.logged_in_user[5])
