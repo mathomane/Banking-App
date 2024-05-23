@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import *
-from tkinter import messagebox, simpledialog
+from tkinter import messagebox, simpledialog, PhotoImage
 import os
 import string
 import random
@@ -95,6 +95,15 @@ class BankApp:
 
         self.root.configure(bg='#fff')
 
+        # Add an image (ensure the path is correct and the image exists)
+        try:
+            image = PhotoImage(file="images/banking-apps_meta_resized.png")
+            image_label = tk.Label(self.root, image=image)
+            image_label.image = image  # Keep a reference to the image to prevent garbage collection
+            image_label.pack()
+        except Exception as e:
+            print(f"Error loading image: {e}")
+
         tk.Label(self.root, text="User Login", font="poppins").pack(pady=10)
         tk.Label(self.root, text="Email").pack()
         self.email_entry = tk.Entry(self.root)
@@ -103,10 +112,8 @@ class BankApp:
         self.password_entry = tk.Entry(self.root, show='*')
         self.password_entry.pack()
 
-        tk.Button(self.root, text="Sign In", background="#8DD9CC", activebackground="orange", font="poppins",
-                command=self.sign_in).pack(pady=10)
-        tk.Button(self.root, text="Create an Account", background="#8DD9CC", activebackground="orange", font="poppins",
-                borderwidth=8, command=self.create_signup_screen).pack()
+        tk.Button(self.root, text="Sign In", background="#8DD9CC", activebackground="orange", font="poppins",command=self.sign_in).pack(pady=10)
+        tk.Button(self.root, text="Create an Account", background="#8DD9CC", activebackground="orange", font="poppins", borderwidth=8, command=self.create_signup_screen).pack()
 
     def create_signup_screen(self):
         self.clear_screen()
@@ -143,7 +150,7 @@ class BankApp:
         self.root.columnconfigure(1, weight=1)
         self.root.columnconfigure(2, weight=1)
 
-        tk.Label(self.root, text=f"Welcome Mr./Ms. {self.logged_in_user[0].upper()}", font=("poppins")).grid(row=0, column=1, pady=10, sticky='ew')
+        tk.Label(self.root, text=f"Welcome Mr./Ms. {self.logged_in_user[0].upper()}", font=("poppins")).grid(row=0, column=1,pady=10,sticky='ew')
         tk.Label(self.root, text=f"A/C No.: {self.logged_in_user[5]}").grid(row=1, column=1, pady=5, sticky='ew')
 
         tk.Button(self.root, text="Check Balance", command=self.check_balance).grid(row=2, column=1, pady=5, sticky='ew')
