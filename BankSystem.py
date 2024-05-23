@@ -97,6 +97,11 @@ class BankApp:
 
         self.root.configure(bg='#fff')
         
+        
+        
+
+        
+
         # Add an image (ensure the path is correct and the image exists)
         try:
             image = PhotoImage(file="images/banking-apps_meta_resized.png")
@@ -134,20 +139,29 @@ class BankApp:
         tk.Label(self.root, text="Email", background="#8DD9CC", activebackground="orange", font="poppins").pack()
         self.email_signup_entry = tk.Entry(self.root)
         self.email_signup_entry.pack()
-        tk.Label(self.root, text="Password").pack()
+
+        # Password entry
+        tk.Label(self.root, text="Password", background="#8DD9CC", activebackground="orange", font="poppins").pack()
         self.password_signup_entry = tk.Entry(self.root, show='*')
         self.password_signup_entry.pack()
-        
-        tk.Button(self.root, text="Sign Up", command=self.sign_up).pack(pady=10)
-        tk.Button(self.root, text="Back", command=self.create_login_screen).pack()
+
+        # Checkbox for choosing random password
+        self.random_password_var = tk.BooleanVar(value=False)
+        tk.Checkbutton(self.root, text="Use Random Password", background="#8DD9CC", variable=self.random_password_var).pack()
+
+        tk.Button(self.root, text="Sign Up",background="#8DD9CC", activebackground="orange", font="poppins", command=self.sign_up).pack(pady=10)
+        tk.Button(self.root, text="Back",background="#8DD9CC", activebackground="orange", font="poppins", borderwidth = 8, command=self.create_login_screen).pack()
 
     def create_main_menu(self):
         self.clear_screen()
         self.root.columnconfigure(0, weight=1)
         self.root.columnconfigure(1, weight=1)
         self.root.columnconfigure(2, weight=1)
+        
+        root.configure(bg="#8DD9CC")
 
-        tk.Label(self.root, text=f"Welcome Mr./Ms. {self.logged_in_user[0].upper()}", font=("poppins")).grid(row=0, column=1, pady=10, sticky='ew')
+
+        tk.Label(self.root, text=f"Welcome Mr./Ms. {self.logged_in_user[0].upper()}", font=("poppins")).grid(row=0, column=1,pady=10,sticky='ew')
         tk.Label(self.root, text=f"A/C No.: {self.logged_in_user[5]}").grid(row=1, column=1, pady=5, sticky='ew')
 
         tk.Button(self.root, text="Check Balance", command=self.check_balance).grid(row=2, column=1, pady=5, sticky='ew')
