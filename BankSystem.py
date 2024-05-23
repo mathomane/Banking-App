@@ -111,9 +111,8 @@ class BankApp:
         except Exception as e:
             print(f"Error loading image: {e}")
 
-        
-        tk.Label(self.root, text="User Login", font="poppins").pack(pady=10)
-        tk.Label(self.root, text="Email").pack()
+        tk.Label(self.root, text="User Login", font="poppins", background="#ffffff").pack(pady=10)
+        tk.Label(self.root, text="Email", font="poppins", background="#ffffff").pack()
         self.email_entry = tk.Entry(self.root)
         self.email_entry.pack()
         tk.Label(self.root, text="Password", font="poppins", background="#ffffff").pack()
@@ -125,9 +124,10 @@ class BankApp:
 
     def create_signup_screen(self):
         self.clear_screen()
-        
-        tk.Label(self.root, text="Sign Up", font=("Arial", 18)).pack(pady=10)
-        tk.Label(self.root, text="Name").pack()
+
+        root.configure(bg="#8DD9CC")
+        tk.Label(self.root, text="Sign Up", background="#8DD9CC", activebackground="orange", font=("poppins", 20)).pack(pady=50)
+        tk.Label(self.root, text="Name",background="#8DD9CC", activebackground="orange", font="poppins").pack(pady=50)
         self.name_entry = tk.Entry(self.root)
         self.name_entry.pack()
         tk.Label(self.root, text="Country", background="#8DD9CC", activebackground="orange", font="poppins").pack()
